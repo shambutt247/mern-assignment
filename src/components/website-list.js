@@ -38,14 +38,31 @@ export default class WebList extends Component {
 
     onSubmit(e) {
         e.preventDefault();
+        var webss=this.state.webUrl;
         const webUrl = {
             webUrl:this.state.webUrl
         };
-        axios.post('http://localhost:4000/websiteData/GetURL', webUrl)
+        if(localStorage.getItem(this.state.webUrl) === null ){
+            axios.post('http://localhost:4000/websiteData/GetURL', webUrl)
             .then(res => {
-
-                this.setState({ todos: res.data });
+                let x=res.data;
+                if(x!==null){
+                    this.setState({ todos: x});
+                    localStorage.setItem(webss, JSON.stringify(x));
+                }
+                
             });
+        }else{
+            var retrievedWeb= localStorage.getItem(webss);
+            let g=JSON.parse(retrievedWeb);
+            let p=parseInt(g["counter"]);
+            console.log(p);
+            p=p+1;
+            g["counter"]=String(p);
+            localStorage.setItem(webss, JSON.stringify(g));
+            this.setState({ todos: g});
+        }
+        
 
             this.setState({
                 webUrl:''
@@ -73,8 +90,17 @@ export default class WebList extends Component {
                     </div>
                     </form>
                     {this.state.todos!==null ? (
+
                         <div>
-                        {this.state.todos}
+                            <br/>
+                        <h5>Website : {this.state.todos["web_link"] }</h5>
+                        <br/>
+                        <h5>CSS Link : {this.state.todos["web_css_link"] }</h5>
+                        <br/>
+                        <h5> Javascript : {this.state.todos["web_js_link"] } </h5>
+                        <br/>
+                        <h4>Counter : {this.state.todos["counter"] }</h4>
+                        
                             </div>
                     ):(
                         <div>
